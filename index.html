@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  FILE: index.html
+  PURPOSE: The main HTML shell of the website.
+           This file contains ONLY the page structure/skeleton.
+           All content is loaded from:
+             js/config.js   ← Edit your content & prices here
+             js/booking.js  ← WhatsApp + Email booking logic
+             js/router.js   ← Page navigation & rendering
+             css/style.css  ← All visual styling
+
+  HOW TO EDIT PAGES:
+    - Change text/prices → edit js/config.js
+    - Change colours/fonts → edit css/style.css
+    - Change booking behaviour → edit js/booking.js
+    - Add new tour packages → see instructions in js/config.js
+
+  HOW TO ADD A NEW STATIC PAGE (e.g. a new region):
+    1. Copy one of the <div class="page" id="page-..."> blocks below
+    2. Give it a new unique id (e.g. id="page-sabah")
+    3. Add a link to it in the nav and footer
+    4. Add its destination data to CONFIG.destinations in config.js
+  ============================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- ======================================================
+       SEO META TAGS — Edit these for Google search results
+  ====================================================== -->
+  <title>JomShuttle – Book now and let us drive you there!</title>
+  <meta name="description" content="Malaysia's most trusted shuttle service. Airport transfers, interstate routes & tour packages. Book via WhatsApp. Available 24/7."/>
+  <meta name="keywords" content="shuttle Malaysia, airport transfer KLIA, van hire Malaysia, JomShuttle, interstate transfer"/>
+
+  <!-- Google Fonts — Nunito (body) + Poppins (headings) -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- ======================================================
+       EmailJS SDK — loaded from CDN (free, no installation)
+       This enables sending emails from the browser.
+  ====================================================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+  <!-- Our stylesheet -->
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- ============================================================
+     NAVIGATION BAR
+     To add a new nav link: copy one <li> and change the text
+     and the showPage() / scrollToSection() call.
+============================================================ -->
+<nav>
+  <div class="nav-inner">
+
+    <!-- Logo (clicking takes you home) -->
+    <a class="logo" href="#" onclick="showPage('home')">
+      <div class="logo-icon">🚐</div>
+      <div class="logo-text">
+        JomShuttle
+        <span class="logo-sub">Malaysia's Trusted Shuttle</span>
+      </div>
+    </a>
+
+    <!-- Desktop nav links -->
+    <ul class="nav-links">
+      <li><a href="#" onclick="showPage('home')"              id="nav-home"  class="active">🏠 Home</a></li>
+      <li><a href="#" onclick="scrollToSection('destinations')"              >🗺️ Destinations</a></li>
+      <li><a href="#" onclick="showPage('tours')"             id="nav-tours" >✈️ Tour Packages</a></li>
+      <li><a href="#" onclick="scrollToSection('about')"                     >ℹ️ About</a></li>
+      <li><a href="https://wasap.my/60136788869/JomShuttle" target="_blank" class="nav-cta">📲 Book Now</a></li>
+    </ul>
+
+    <!-- Hamburger button (mobile only) -->
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Mobile dropdown menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#" onclick="showPage('home')">🏠 Home</a>
+    <a href="#" onclick="scrollToSection('destinations')">🗺️ Destinations</a>
+    <a href="#" onclick="showPage('tours')">✈️ Tour Packages</a>
+    <a href="#" onclick="scrollToSection('about')">ℹ️ About</a>
+    <a href="https://wasap.my/60136788869/JomShuttle" target="_blank">📲 Book Now on WhatsApp</a>
+  </div>
+</nav>
+
+
+<!-- ============================================================
+     HOME PAGE
+     The main landing page. Content is rendered dynamically
+     from config.js by router.js — so edit config.js, not here.
+============================================================ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-blob blob1"></div>
+    <div class="hero-blob blob2"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-badge">⭐ Malaysia's Most Trusted Shuttle Service</div>
+        <h1>Book Now &amp; Let Us<br/><span>Drive You There!</span></h1>
+        <p class="hero-sub">
+          Comfortable, reliable &amp; affordable shuttle service across Malaysia —
+          airport transfers &amp; interstate journeys. Just relax while we handle
+          the driving. Available 24/7!
+        </p>
+        <div class="hero-btns">
+          <a class="btn btn-primary" href="https://wasap.my/60136788869/JomShuttle" target="_blank">📲 Book on WhatsApp</a>
+          <a class="btn btn-outline" href="#" onclick="showPage('tours')">✈️ Tour Packages</a>
+          <a class="btn btn-outline" href="#" onclick="scrollToSection('destinations')">🗺️ Destinations</a>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-van">
+          <span class="van-emoji">🚐</span>
+          <div class="hero-stats">
+            <div class="stat"><div class="stat-num">24/7</div><div class="stat-lbl">Available</div></div>
+            <div class="stat"><div class="stat-num">13+</div><div class="stat-lbl">States</div></div>
+            <div class="stat"><div class="stat-num">100%</div><div class="stat-lbl">Trusted</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH WIDGET -->
+  <div class="search-section">
+    <div class="search-wrap">
+      <div class="search-tabs">
+        <button class="search-tab active" onclick="switchTab(this,'airport')">✈️ Airport Transfer</button>
+        <button class="search-tab"        onclick="switchTab(this,'interstate')">🛣️ Interstate Transfer</button>
+        <button class="search-tab"        onclick="switchTab(this,'tour')">🏖️ Tour Package</button>
+      </div>
+      <div class="search-row">
+        <div class="search-field">
+          <label>From</label>
+          <select id="from-select">
+            <option>KLIA / KLIA2</option>
+            <option>KL City</option>
+            <option>KL Sentral</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label>To</label>
+          <select id="to-select">
+            <option>KL City</option>
+            <option>KLIA / KLIA2</option>
+            <option>Selangor</option>
+            <option>Penang</option>
+          </select>
+        </div>
+        <div class="search-field">
+          <label>Date</label>
+          <input type="date" id="travel-date"/>
+        </div>
+        <div class="search-field">
+          <label>Passengers</label>
+          <select id="search-pax">
+            <option>1 Passenger</option>
+            <option>2 Passengers</option>
+            <option>3 Passengers</option>
+            <option>4–6 Passengers</option>
+            <option>7–13 Passengers</option>
+            <option>14+ Passengers</option>
+          </select>
+        </div>
+        <div style="padding-bottom:24px;">
+          <button class="btn btn-primary" onclick="searchBooking()">🔍 Search</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DESTINATIONS SECTION -->
+  <!-- dest-grid is populated automatically from CONFIG.destinations -->
+  <section id="destinations" style="background:#fff; padding-top:50px;">
+    <div class="container">
+      <div class="section-title">
+        <div class="pill">🗺️ Destinations</div>
+        <h2>Choose Your Destination</h2>
+        <p>Click a state below — you'll be connected to our WhatsApp team instantly!</p>
+      </div>
+      <div class="dest-grid" id="dest-grid">
+        <!-- Rendered by renderDestinations() in router.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS SECTION -->
+  <!-- steps-container is populated from CONFIG.steps -->
+  <section style="background:var(--bg);">
+    <div class="container">
+      <div class="section-title">
+        <div class="pill">📋 Simple Process</div>
+        <h2>How It Works</h2>
+        <p>Booking your shuttle is fast &amp; easy — just 4 simple steps!</p>
+      </div>
+      <div class="steps" id="steps-container">
+        <!-- Rendered by renderSteps() in router.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED TOURS (homepage preview — shows first 2 tours) -->
+  <section style="background:#fff;">
+    <div class="container">
+      <div class="section-title">
+        <div class="pill">✈️ Tour Packages</div>
+        <h2>Popular Tour Packages</h2>
+        <p>Explore amazing destinations with our all-inclusive guided tours</p>
+      </div>
+      <div class="tours-grid" id="tour-cards-home">
+        <!-- Rendered by renderTourCards('tour-cards-home', 2) in router.js -->
+      </div>
+      <div style="text-align:center; margin-top:28px;">
+        <button class="btn btn-blue" onclick="showPage('tours')">View All Tour Packages →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE US SECTION -->
+  <!-- features-grid is populated from CONFIG.features -->
+  <section class="features-bg" id="about">
+    <div class="container">
+      <div class="section-title">
+        <div class="pill" style="background:rgba(255,255,255,.15);color:#fff;">⭐ Why Choose Us</div>
+        <h2 style="color:#fff;">Why Book With JomShuttle?</h2>
+        <p style="color:#c8deff;">We're committed to making every journey comfortable, safe &amp; affordable</p>
+      </div>
+      <div class="features-grid" id="features-grid">
+        <!-- Rendered by renderFeatures() in router.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- AIRPORT HIGHLIGHT BANNER -->
+  <section style="background:#fff;">
+    <div class="container">
+      <div style="background:linear-gradient(135deg,#003580,#006ce4); border-radius:22px; padding:44px; display:flex; align-items:center; gap:36px; flex-wrap:wrap;">
+        <div style="font-size:80px; animation:float 5s ease-in-out infinite;">✈️</div>
+        <div style="flex:1; min-width:200px;">
+          <div style="color:var(--yellow);font-weight:900;font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">
+            Best Airport Shuttle in Malaysia!
+          </div>
+          <h3 style="color:#fff;font-family:'Poppins',sans-serif;font-size:1.7rem;font-weight:800;margin-bottom:12px;">
+            KLIA ↔ Anywhere in Malaysia
+          </h3>
+          <p style="color:#c8deff;font-size:.95rem;line-height:1.7;margin-bottom:20px;">
+            Arriving at or departing from KLIA / KLIA2? We'll get you there on time, every time — no stress, no hassle!
+          </p>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="showPage('kl')">View KL Routes</button>
+            <a class="btn btn-outline" href="https://wasap.my/60136788869/JomShuttle" target="_blank">📲 Book Now</a>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,.1);border-radius:16px;padding:22px;min-width:180px;text-align:center;">
+          <div style="color:#fff;font-weight:900;font-size:2rem;">24h</div>
+          <div style="color:#c8deff;font-size:.85rem;">Daily Service</div>
+          <div style="color:#fff;font-weight:900;font-size:2rem;margin-top:12px;">7 days</div>
+          <div style="color:#c8deff;font-size:.85rem;">Per Week</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY SECTION -->
+  <section style="background:var(--bg);">
+    <div class="container">
+      <div class="section-title">
+        <div class="pill">📸 Gallery</div>
+        <h2>Our Fleet &amp; Journeys</h2>
+        <p>Toyota HiAce fleet — spacious, comfortable &amp; well-maintained</p>
+      </div>
+      <div class="gallery-grid">
+        <!-- Static gallery items with emoji placeholders -->
+        <!-- Replace these with <img> tags once you have real photos -->
+        <div class="gallery-item">🚐</div>
+        <div class="gallery-item">🏙️</div>
+        <div class="gallery-item">🛣️</div>
+        <div class="gallery-item">✈️</div>
+        <div class="gallery-item">🌴</div>
+        <div class="gallery-item">🗺️</div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- END HOME PAGE -->
+
+
+<!-- ============================================================
+     TOUR PACKAGES LISTING PAGE
+============================================================ -->
+<div class="page" id="page-tours">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+      <h1>✈️ Tour Packages</h1>
+      <div class="sub">Explore Malaysia &amp; beyond with our curated guided tours</div>
+    </div>
+  </div>
+  <section>
+    <div class="container">
+
+      <!-- Tour cards — rendered from CONFIG.tourPackages -->
+      <div class="tours-grid" id="tour-cards-page">
+        <!-- Rendered by renderTourCards('tour-cards-page', 0) in router.js -->
+      </div>
+
+      <!-- Custom dates info box -->
+      <div style="background:linear-gradient(135deg,#003580,#006ce4);border-radius:18px;padding:34px;margin-top:36px;text-align:center;">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🗓️</div>
+        <h3 style="color:#fff;font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:8px;">
+          Want Custom Dates?
+        </h3>
+        <p style="color:#c8deff;margin-bottom:20px;font-size:.95rem;">
+          Minimum 10 pax for private group booking with custom dates. Contact us now!
+        </p>
+        <a class="btn btn-primary" href="https://wasap.my/60136788869/JomShuttle" target="_blank">
+          📲 Chat with Us on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</div><!-- END TOURS PAGE -->
+
+
+<!-- ============================================================
+     TOUR DETAIL PAGES — AUTO-GENERATED
+     All tour detail pages (one per tour in config.js)
+     are created dynamically inside this wrapper div
+     by renderTourDetailPages() in router.js.
+
+     YOU DO NOT NEED TO EDIT THIS SECTION.
+     Just add tours in config.js and they appear here.
+============================================================ -->
+<div id="tour-pages-wrapper">
+  <!-- Tour pages are injected here automatically -->
+</div>
+
+
+<!-- ============================================================
+     KUALA LUMPUR ROUTES PAGE
+     Airport transfer routes from config.js
+============================================================ -->
+<div class="page" id="page-kl">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+      <h1>🏙️ Kuala Lumpur Routes</h1>
+      <div class="sub">Airport Transfer — KLIA / KLIA2 ↔ KL City</div>
+    </div>
+  </div>
+  <section>
+    <div class="container" style="max-width:800px;">
+      <div class="section-title" style="margin-bottom:28px;">
+        <div class="pill">✈️ Airport Transfer</div>
+        <h2>KLIA / KLIA2 ↔ KL City</h2>
+        <p>Choose your van type below to book instantly via WhatsApp</p>
+      </div>
+
+      <!-- Route cards rendered from CONFIG.airportRoutes -->
+      <div id="airport-routes">
+        <!-- Rendered by renderAirportRoutes() in router.js -->
+      </div>
+
+      <!-- Route info box -->
+      <div style="background:#fffbea;border:2px solid #FFD700;border-radius:14px;padding:20px;margin-top:8px;">
+        <strong style="color:var(--blue);">📝 Route Info:</strong>
+        <ul style="margin-top:10px;padding-left:20px;color:var(--muted);font-size:.9rem;line-height:2;">
+          <li>KLIA Terminal 1 &amp; KLIA2 both covered</li>
+          <li>Door-to-door service within KL City area</li>
+          <li>Available 24/7 including public holidays</li>
+          <li>Pre-book at least 4 hours before pickup</li>
+        </ul>
+      </div>
+
+      <!-- Full booking form for KL routes -->
+      <div class="booking-card" style="margin-top:24px;">
+        <div class="booking-card-title" style="margin-bottom:6px;">📋 Book KL Airport Transfer</div>
+        <p style="color:var(--muted);font-size:.88rem;margin-bottom:20px;">
+          Fill in your details — WhatsApp will open pre-filled AND we'll receive an email alert.
+        </p>
+        <!-- buildBookingFormHTML is called by renderAirportRoutes but we add a standalone form here -->
+        <form id="booking-form" onsubmit="event.preventDefault(); submitBooking('Airport Transfer — KL','JomShuttle');" novalidate>
+  
+  <!-- HONEYPOT FIELD (Anti-Bot) -->
+  <input type="text" id="field-hp" name="website_url" style="display:none !important;" tabindex="-1" autocomplete="off"/>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div class="form-field">
+              <label class="form-label">👤 Full Name *</label>
+              <input id="field-name" type="text" class="form-input" placeholder="e.g. Ahmad Fahmie" required/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">📞 Phone Number *</label>
+              <input id="field-phone" type="tel" class="form-input" placeholder="e.g. 0136788869" required/>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom:14px;">
+            <label class="form-label">📧 Email (optional)</label>
+            <input id="field-email" type="email" class="form-input" placeholder="e.g. customer@email.com"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div class="form-field">
+              <label class="form-label">📍 Pickup Point *</label>
+              <input id="field-pickup" type="text" class="form-input" placeholder="e.g. KLIA Terminal 1" required/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">🏁 Drop-off Point *</label>
+              <input id="field-dropoff" type="text" class="form-input" placeholder="e.g. Hotel KL City" required/>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+            <div class="form-field">
+              <label class="form-label">📅 Travel Date *</label>
+              <input id="field-date" type="date" class="form-input" required/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">🕐 Travel Time *</label>
+              <input id="field-time" type="time" class="form-input" required/>
+            </div>
+            <div class="form-field">
+              <label class="form-label">👥 Passengers *</label>
+              <select id="field-pax" class="form-input" required>
+                <option value="">Select...</option>
+                <option>1–3 Passengers</option>
+                <option>4–6 Passengers</option>
+                <option>7–10 Passengers</option>
+                <option>11–13 Passengers</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom:14px;">
+            <label class="form-label">🚐 Van Type</label>
+            <select id="field-van" class="form-input">
+              <option value="">No preference</option>
+              <option>Small Van (RM200)</option>
+              <option>Large Van (RM250)</option>
+            </select>
+          </div>
+          <div class="form-field" style="margin-bottom:20px;">
+            <label class="form-label">💬 Special Requests</label>
+            <textarea id="field-special" class="form-input" rows="2" placeholder="Flight number, wheelchair access, extra luggage, etc."></textarea>
+          </div>
+          <button id="booking-submit-btn" type="submit" class="btn btn-green" style="width:100%;justify-content:center;font-size:1.05rem;padding:16px;">
+            📲 Send Booking via WhatsApp + Email Alert
+          </button>
+          <div id="form-message" style="display:none;"></div>
+          <p style="text-align:center;color:var(--muted);font-size:.78rem;margin-top:12px;">
+            WhatsApp will open with your details pre-filled AND our team gets an email. 📧📲
+          </p>
+        </form>
+      </div>
+
+    </div>
+  </section>
+</div><!-- END KL PAGE -->
+
+
+<!-- ============================================================
+     ALL STATES / DESTINATIONS PAGE
+============================================================ -->
+<div class="page" id="page-states">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <button class="back-btn" onclick="showPage('home')">← Back to Home</button>
+      <h1>🗺️ All Destinations</h1>
+      <div class="sub">Select your state and book instantly via WhatsApp</div>
+    </div>
+  </div>
+  <section>
+    <div class="container">
+      <div class="section-title">
+        <div class="pill">🚐 Interstate Transfer</div>
+        <h2>All Malaysia States</h2>
+        <p>Click any state to start your WhatsApp booking</p>
+      </div>
+      <div class="state-grid" id="states-list">
+        <!-- Rendered by renderStatesList() in router.js -->
+      </div>
+    </div>
+  </section>
+</div><!-- END STATES PAGE -->
+
+
+<!-- ============================================================
+     FOOTER
+     To add a footer link: copy one <a> tag and change it.
+============================================================ -->
+<footer>
+  <div class="footer-grid">
+
+    <!-- Brand column -->
+    <div class="footer-brand">
+      <div class="logo" style="margin-bottom:14px;">
+        <div class="logo-icon">🚐</div>
+        <div class="logo-text">
+          JomShuttle
+          <span class="logo-sub" style="color:var(--yellow);">Malaysia's Trusted Shuttle</span>
+        </div>
+      </div>
+      <p>Book now and let us drive you there! Malaysia's most trusted shuttle &amp; tour service — operating 24/7 across all major states.</p>
+      <div class="footer-hours">
+        <div class="h-num">24hrs/day · 7 days/week</div>
+        <div style="font-size:.8rem;color:rgba(255,255,255,.8);margin-top:4px;">Always ready to drive you</div>
+      </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a onclick="showPage('home')">🏠 Home</a>
+      <a onclick="showPage('tours')">✈️ Tour Packages</a>
+      <a onclick="showPage('kl')">🏙️ KL Airport Routes</a>
+      <a onclick="showPage('states')">🗺️ All Destinations</a>
+      <a onclick="scrollToSection('about')">ℹ️ About Us</a>
+    </div>
+
+    <!-- Destinations -->
+    <div class="footer-col">
+      <h4>Popular Routes</h4>
+      <a href="https://wasap.my/60136788869/KualaLumpur" target="_blank">Kuala Lumpur</a>
+      <a href="https://wasap.my/60136788869/Selangor"    target="_blank">Selangor</a>
+      <a href="https://wasap.my/60136788869/Penang"      target="_blank">Penang</a>
+      <a href="https://wasap.my/60136788869/Johor"       target="_blank">Johor</a>
+      <a href="https://wasap.my/60136788869/Melaka"      target="_blank">Melaka</a>
+      <a href="https://wasap.my/60136788869/Pahang"      target="_blank">Pahang</a>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <a href="https://wasap.my/60136788869/JomShuttle"      target="_blank">📲 WhatsApp Us</a>
+      <span>📞 +60 13-678 8869</span>
+      <span>📧 my.hnf.store@gmail.com</span>
+      <span>🕐 24hrs / 7 days</span>
+      <span>🇲🇾 Malaysia</span>
+    </div>
+
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 JomShuttle. All Rights Reserved. Malaysia's Trusted Shuttle &amp; Tour Service.</p>
+  </div>
+</footer>
+
+
+<!-- ============================================================
+     FLOATING WHATSAPP BUTTON
+     Always visible at bottom-right corner.
+     Change the phone number here and in config.js.
+============================================================ -->
+<a class="wa-float" href="https://wasap.my/60136788869/JomShuttle" target="_blank" title="Book via WhatsApp">
+  <span style="font-size:1.8rem;">💬</span>
+  <div class="wa-tooltip">Book via WhatsApp!</div>
+</a>
+
+
+<!-- ============================================================
+     JAVASCRIPT FILES — loaded at end of body for performance
+     ORDER MATTERS:
+       1. config.js  → defines CONFIG object (must be first)
+       2. booking.js → uses CONFIG, defines submitBooking()
+       3. router.js  → uses CONFIG + booking, renders pages
+============================================================ -->
+<script src="js/config.js"></script>    <!-- 1. All your content & settings -->
+<script src="js/booking.js"></script>   <!-- 2. WhatsApp + Email logic -->
+<script src="js/router.js"></script>    <!-- 3. Page navigation & rendering -->
+
+</body>
+</html>
+<!--
+  ============================================================
+  END OF index.html
+  ============================================================
+-->
