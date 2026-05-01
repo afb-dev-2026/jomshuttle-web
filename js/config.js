@@ -37,9 +37,9 @@ const CONFIG = {
      These IDs are public identifiers. 
   ---------------------------------------------------------- */
   emailJS: {
-    emailServiceID:  "YOUR_SERVICE_ID",    
-    emailTemplateID: "YOUR_TEMPLATE_ID",   
-    emailPublicKey:  "YOUR_PUBLIC_KEY",    
+    emailServiceID:  "service_ae6ncn1",    
+    emailTemplateID: "template_7li5hls",   
+    emailPublicKey:  "XWpZk_d0xRg1WMmhE",    
   },
 
   /* ----------------------------------------------------------
